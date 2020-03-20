@@ -9,6 +9,7 @@ import { Article } from '../../models/Article';
 export class NoticiasComponent implements OnInit {
 
   @Input() noticias: Article[] = [];
+  @Input() enFavorito = false;
 
   constructor() { }
 

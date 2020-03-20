@@ -13,11 +13,35 @@ export class Tab1Page implements OnInit {
   constructor( private noticiasService: NoticiasService ) {}
 
   ngOnInit() {
-    this.noticiasService.getTopHeadlines()
-        .subscribe(resp => {
-          console.log(resp);
+    this.cargarNoticias();
+  }
 
-          this.noticias.push(...resp.articles);
+  /**
+   * Carga la siguiente pagina de noticias al llegar al final de la pantalla
+   * @param event evento del <ion-infinite-scroll>
+   */
+  onScroll(event) {
+    this.cargarNoticias(event);
+  }
+
+  /**
+   * Muestra las noticias mas relevantes en pantalla
+   * @param event evento del <ion-infinite-scroll>
+   */
+  cargarNoticias(event?) {
+    this.noticiasService.getTopHeadlines()
+        .subscribe(result => {
+          if (result.articles.length === 0) {
+            event.target.disabled = true;
+            event.target.complete();
+            return;
+          }
+
+          this.noticias.push(...result.articles);
+
+          if (event) {
+            event.target.complete();
+          }
         });
   }
 

@@ -23,19 +23,41 @@ export class Tab2Page implements OnInit {
     this.cargarNoticias(this.categorias[0]);
   }
 
-  cambioCategoria( event ) {
+  /**
+   * Cambia de pantalla a la categoria seleccionada
+   * @param event evento del <ion-segment>
+   */
+  onChange( event ) {
     this.noticias = [];
 
     this.cargarNoticias(event.detail.value);
   }
 
-  cargarNoticias(categoria: string) {
+  /**
+   * Carga las noticias correspondientes a la categoria seleccionada
+   * @param categoria Nombre de la categoria seleccionada por el usuario
+   */
+  cargarNoticias(categoria: string, event?) {
     this.segment.value = categoria;
 
     this.noticiasService.getTopHeadlinesCategoria(categoria)
         .subscribe(result => {
+          if (result.articles.length === 0) {
+            event.target.disabled = true;
+            event.target.complete();
+            return;
+          }
+
           this.noticias.push(...result.articles);
+
+          if (event) {
+            event.target.complete();
+          }
         });
+  }
+
+  onScroll(event) {
+    this.cargarNoticias(this.segment.value, event);
   }
 
 }

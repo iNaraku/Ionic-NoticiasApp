@@ -8,7 +8,7 @@
   <ion-segment scrollable 
                mode="md" 
                color="primary"
-               (ionChange)="cambioCategoria($event)">
+               (ionChange)="onChange($event)">
 
     <ion-segment-button *ngFor="let categoria of categorias"
                         mode="md" [value]="categoria">
@@ -21,5 +21,11 @@
 <ion-content [fullscreen]="true" color="dark">
 
   <app-noticias [noticias]="noticias"></app-noticias>
+
+  <ion-infinite-scroll threshold="25%" (ionInfinite)="onScroll($event)">
+    <ion-infinite-scroll-content loading-spinner="crescent" 
+                                 loading-text="Cargando más noticias...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
 </ion-content>
