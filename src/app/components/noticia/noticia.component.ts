@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../../models/Article';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { DataLocalService } from '../../services/data-local.service';
 
@@ -21,7 +21,8 @@ export class NoticiaComponent implements OnInit {
   constructor( private iab: InAppBrowser,
                private actionSheetController: ActionSheetController,
                private socialSharing: SocialSharing,
-               private dataLocalService: DataLocalService ) { }
+               private dataLocalService: DataLocalService,
+               private platform: Platform ) { }
 
   ngOnInit() {}
 
@@ -62,12 +63,8 @@ export class NoticiaComponent implements OnInit {
         text: 'Compartir',
         icon: 'share-social-outline',
         handler: () => {
-          this.socialSharing.share(
-            this.noticia.title,
-            this.noticia.source.name,
-            null,
-            this.noticia.url
-          );
+          this.compartirNoticia();
+          
         }
       },
       guardarFavritos,
@@ -80,6 +77,29 @@ export class NoticiaComponent implements OnInit {
       }]
     });
     await actionSheet.present();
+  }
+
+  compartirNoticia() {
+    if (this.platform.is('cordova')) {
+      this.socialSharing.share(
+        this.noticia.title,
+        this.noticia.source.name,
+        null,
+        this.noticia.url
+      );
+    } else {
+      if (navigator['share']) {
+        navigator['share']({
+          title: this.noticia.title,
+          text: this.noticia.description,
+          url: this.noticia.url
+        })
+          .then(() => console.log('Successful share'))
+          .catch((error) => console.log('Error shering', error));
+      } else {
+        console.log('El avgador no soporta la opcion de compartir');
+      }
+    }
   }
 
 }
